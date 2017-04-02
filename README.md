@@ -27,7 +27,7 @@ Topics include:
 2. An SSH key. You may have one already. If so, skip this.
     1. If you're running on macOS, Linux, or Bash on Windows, it will be located at *~/.ssh/id_rsa* or *~/.ssh/id_dsa*. If not, just run `ssh-keygen`.
     2. If you're using PuTTY, run *puttygen.exe*.
-3. A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. This will be distributed beforehand, but you can skip to step 4 if you want to create one yourself.
+3. A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. This will be distributed beforehand, but you can skip to step 4 if you want to create one yourself, or make one on The Cloud™ if you know what you're doing.
     1. Import the *.ova* file into [VirtualBox][].
     2. Once it's imported, click "Network" and change the network from "NAT" to "Bridged Adapter".
     3. Remember that the username is "webops" and the password is "let me in please".
@@ -65,3 +65,53 @@ Topics include:
 [PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
 [Download Ubuntu Server]: https://www.ubuntu.com/download/server
 [VirtualBox]: https://www.virtualbox.org/
+
+## Playbook
+
+### 00:00 — Introduction
+
+A short introduction to deploying and running a website.
+
+### 00:10 — Make sure everyone has a machine working
+
+Hopefully not many people will have had trouble installing a VM and setting up SSH keys. In any case, pair them up, so only half of them need to.
+
+In case everyone has had issues, take 10 minutes to sort them all out.
+
+### 00:20 — Set up the server
+
+### 00:20 — Start a web app on the server
+
+Pick an app that takes `PORT` as an environment variable.
+
+[Here's one I wrote][Predestination], in case you're stuck. If you use it:
+
+```sh
+sudo add-apt-repository ppa:jonathonf/python-3.6
+sudo apt update
+sudo apt upgrade
+sudo apt install make virtualenv python3.6
+make site-packages
+# run `make web` to start it
+```
+
+Then run it:
+
+```sh
+PORT=8080 ./run # or however you start the application
+```
+
+*[Browse to the URL and show it off. If possible, leave the browser window open. It will automatically reconnect if you terminate the server and restart it.]*
+
+Note that we're using the port 8080. HTTP usually runs over port 80, but we can't start an application there without it running as *root*, and we don't want to do that, as an attacker compromising the web server could get access to anything else.
+
+In fact, we probably want to make sure the application has as few rights as possible. So let's create a user just for that.
+
+```sh
+sudo useradd web
+sudo --user=web PORT=8080 ./run
+```
+
+*[Leave it running for a few seconds, then kill it again.]*
+
+[Predestination]: https://github.com/SamirTalwar/predestination
