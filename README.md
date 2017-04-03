@@ -269,7 +269,42 @@ Using Ansible (or whatever else), we can easily throw away this server and set u
 [Puppet]: https://puppet.com/
 [SaltStack]: https://saltstack.com/
 
-### 01:00 — What if it goes down?
+### 01:00 — Now it's time to release a new version.
+
+Let's make it blue.
+
+*[Change it to blue. Can't be that hard. Try `#147086`.]*
+
+All we need to do is make a couple of changes to the Ansible playbook. We'll add the following lines to the "clone" section:
+
+```
+        version: blue
+        update: yes
+```
+
+*[Ship it, wait 30 seconds and reload.]*
+
+Nice and easy. Ansible took care of figuring out what's changed and what's stayed the same. It updates the Git repository to point at our new version, then instructs the supervisor to restart it. It's only down for a few seconds while it restarts.
+
+If you really can't go down, even for a second, there are more advanced techniques you can use. For example, you can use *blue-green deployment*. What this means is that we have two servers (codenamed "blue" and "green"). Only one of the servers is active at any time (this means that we somehow configured a third server, the "gateway", to redirect all traffic to this one). Let's assume it's the blue one. When we release, we release to the inactive (green) server, ensure that everything is healthy, then activate it. If it doesn't work, figure out why, and meanwhile, the blue server is still happily serving requests.
+
+It's quite common to automate this kind of deployment either periodically or every time a commit gets pushed to the *master* branch. THe latter is called *continuous deployment*. This is related to *continuous integration*. The idea is that each time you push, a server runs your Ansible playbook or other deployment mechanism for you. You could manage this server yourself, but you could also use [Travis CI][], [CircleCI][], [Shippable][] or another online service, which are often free to start.
+
+[CircleCI]: https://circleci.com/
+[Shippable]: https://www.shippable.com/
+[Travis CI]: https://travis-ci.org/
+
+### 01:10 — I compile my code, and it's private!
+
+Right now, we're shipping Python and JavaScript, which we can just run from the source code. However, some language platforms require the source code to be *compiled* first. If this is the case, it's not enough to just clone the repository—you have to create a *release* and store it somewhere. If you use GitHub or Bitbucket, you'll find that there's a mechanism there for uploading releases, which you can then instruct Ansible to download.
+
+You might also want to keep your code private. This is doable but requires that you configure Ansible to generate an SSH key, tell your host what it is, then use that to clone the repository or download the releases.
+
+You could get Ansible to just copy the release from your local machine, but this means that you'll never be able to go back to an older release, as it'll get overwritten each time. For this reason, I wouldn't recommend it.
+
+All of this is beyond the scope of this tutorial, but ask me more about it if you're curious.
+
+### 01:15 — What if it goes down?
 
 That'd be awful, right?
 
