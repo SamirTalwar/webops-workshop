@@ -221,7 +221,7 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 
 (We have to run the whole thing in a subshell because otherwise we can't redirect to that file; it's owned by *root*.)
 
-And while we're at it, let's use a real hostname instead. 
+And while we're at it, let's use a real hostname instead.
 
 *[Cut to the preset DNS settings, then show the site at the real hostname.]*
 
@@ -339,3 +339,17 @@ In this output stream, we can see what's called a "stack trace". This allows us 
 *[Show the line.]*
 
 Once we diagnose the problem, we can now fix the bug and redeploy, or roll back to a previous version.
+
+### 01:30 — How do I store data?
+
+Short answer: don't. At least not on your machine.
+
+Remember how we've been using third-party services such as Pingdom, CircleCI and Amazon Web Services to manage parts of our stack? Let's introduce one more. Whatever your database, someone else is better at managing it than you. There are lots of free or cheap options, such as [ElephantSQL][], which provides PostgreSQL, a powerful relational database, [Compose][], which provides hosted versions of MongoDB, Redis, and other document-based databases, [Amazon RDS][], which provides a few different relational databases, and many more.
+
+You might think it's easy or cheaper to run your own. And it may well be, until you accidentally delete some data or your hard drive breaks. At that point, you'll wish you paid for someone else to manage backups and redundancy.
+
+And whatever you do, don't store data text files on the server. It's the easiest way to accidentally lose data.
+
+[ElephantSQL]: https://www.elephantsql.com/
+[Compose]: https://compose.com/
+[Amazon RDS]: https://aws.amazon.com/rds/
