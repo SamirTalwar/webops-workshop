@@ -16,6 +16,9 @@
     - name: Upgrade everything
       apt:
         upgrade: full
+    - name: Install iptables-persistent
+      apt:
+        name: iptables-persistent
     - name: Install make
       apt:
         name: make

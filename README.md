@@ -252,6 +252,16 @@ Now let's get Ansible to configure our server. First we'll set up all the boring
 ansible-playbook ansible/prerequisites.yaml
 ```
 
+Now we'll set up the application:
+
+```sh
+ansible-playbook ansible/predestination.yaml
+```
+
+Voila. Nothing changed (except the application going down for a few seconds). That's because we mostly did all the work already. You'll note that the supervisor was, however, reconfigured—that's because the application was moved from */home/ubuntu/predestination* to */var/www/predestination*.
+
+Using Ansible (or whatever else), we can easily throw away this server and set up a new one in just a few clicks.
+
 [Ansible]: https://www.ansible.com/
 [Chef]: https://www.chef.io/chef/
 [Puppet]: https://puppet.com/

@@ -1,0 +1,47 @@
+---
+- hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Create a user account for the application
+      user:
+        name: web
+        shell: /bin/false
+    - name: Create the application directory
+      file:
+        path: /var/www/predestination
+        state: directory
+        owner: web
+        group: web
+    - name: Clone the repository
+      remote_user: web
+      become: yes
+      git:
+        repo: https://github.com/SamirTalwar/predestination.git
+        dest: /var/www/predestination
+    - name: Install the application dependencies
+      command: make site-packages
+      args:
+        chdir: /var/www/predestination
+    - name: Set up the supervisor for the application
+      copy:
+        content: |
+          [program:predestination]
+          command=make -C /var/www/predestination web
+          environment=PORT=8080
+          user=web
+        dest: /etc/supervisor/conf.d/predestination.conf
+    - name: Restart the application
+      supervisorctl:
+        name: predestination
+        state: restarted
+    - name: Forward port 80 to port 8080
+      iptables:
+        table: nat
+        chain: PREROUTING
+        protocol: tcp
+        destination_port: 80
+        jump: REDIRECT
+        to_ports: 8080
+    - name: Save the iptables configuration
+      shell: iptables-save > /etc/iptables/rules.v4
