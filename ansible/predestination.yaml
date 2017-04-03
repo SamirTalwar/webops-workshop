@@ -27,7 +27,7 @@
       copy:
         content: |
           [program:predestination]
-          command=make -C /var/www/predestination web
+          command=/var/www/predestination/web
           environment=PORT=8080
           user=web
         dest: /etc/supervisor/conf.d/predestination.conf

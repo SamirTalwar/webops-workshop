@@ -120,13 +120,15 @@ sudo apt update
 sudo apt upgrade
 sudo apt install make python3.6 virtualenv
 make site-packages
-# run `make web` to start it
+# run `./web` to start it
 ```
+
+If you're not using Predestination, change `./web` to however you start your application.
 
 Then run it:
 
 ```sh
-PORT=8080 ./run # or however you start the application
+PORT=8080 ./web # or however you start the application
 ```
 
 *[Browse to the URL and show it off. If possible, leave the browser window open. It will automatically reconnect if you terminate the server and restart it.]*
@@ -137,7 +139,7 @@ In fact, we probably want to make sure the application has as few rights as poss
 
 ```sh
 sudo useradd web
-sudo --user=web PORT=8080 ./run
+sudo --user=web PORT=8080 ./web
 ```
 
 *[Leave it running for a few seconds, then kill it again.]*
@@ -149,13 +151,13 @@ Now, we can run the web server, but it's running in our terminal. We can't do an
 So run it in the background.
 
 ```sh
-sudo --user=web PORT=8080 ./run &
+sudo --user=web PORT=8080 ./web &
 ```
 
 … Sort of works. It's still tied to this TTY (terminal), and its output is interfering with our work. We can redirect it to a file:
 
 ```sh
-sudo --user=web PORT=8080 ./run >>& /var/log/site.log &
+sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
 ```
 
 If we lose SSH connection, the site might go down.
@@ -165,7 +167,7 @@ If we lose SSH connection, the site might go down.
 You can use `nohup` to disconnect the process from the terminal.
 
 ```sh
-nohup sudo --user=web PORT=8080 ./run >>& /var/log/site.log &
+nohup sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
 ```
 
 This isn't great, though. What if we want to stop the application? We have to write down the PID? And remember to kill it? We can't just start a new version over the top—it won't even start, because the port is taken.
@@ -180,7 +182,7 @@ So let's configure it to run our application.
 
 ```
 [program:site]
-command=/home/ubuntu/site/run
+command=/home/ubuntu/site/web
 environment=PORT=8080
 user=web
 ```
