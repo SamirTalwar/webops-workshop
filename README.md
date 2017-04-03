@@ -70,7 +70,7 @@ Topics include:
 
 ### Preparation
 
-Create an AWS server with Ubuntu 16.04 (Xenial). Assuming we're using the [Predestination][] app, you'll need the following:
+Create an AWS server with Ubuntu 16.04 (Xenial), and save the PEM as *~/.ssh/\<something\>.pem* with a chmod of 600. Assuming we're using the [Predestination][] app, you'll need the following:
 
 ```sh
 sudo add-apt-repository ppa:jonathonf/python-3.6
@@ -83,6 +83,14 @@ sudo chsh -s zsh ubuntu
 In the security group, open TCP ports 80, 443 and 8080, and UDP ports 60000-61000 (for Mosh).
 
 Create a hostname for it.
+
+Set up your SSH configuration by adding the following to *~/.ssh/config*:
+
+```
+Host <hostname>
+    User ubuntu
+    IdentityFile <path to PEM file>
+```
 
 [Predestination]: https://github.com/SamirTalwar/predestination
 
