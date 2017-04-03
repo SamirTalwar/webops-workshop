@@ -266,3 +266,13 @@ Using Ansible (or whatever else), we can easily throw away this server and set u
 [Chef]: https://www.chef.io/chef/
 [Puppet]: https://puppet.com/
 [SaltStack]: https://saltstack.com/
+
+### 01:00 — What if it goes down?
+
+That'd be awful, right?
+
+Fortunately, the Internet will let me know. I've configured [Pingdom][] to tell me if the site goes down. It'll send me an email within five minutes if it doesn't come back up sharpish.
+
+*[Show the emails that have inevitably been sent in the last hour.]*
+
+There are lots of tools just like Pingdom. Find the one you like. I recommend starting on a free trial to make sure it's right for you.
