@@ -1,0 +1,40 @@
+---
+- hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Point the server at Python 3.6
+      apt_repository:
+        repo: ppa:jonathonf/python-3.6
+        update_cache: no
+    - name: Update the APT repositories
+      apt:
+        update_cache: yes
+    - name: Install aptitude
+      apt:
+        name: aptitude
+    - name: Upgrade everything
+      apt:
+        upgrade: full
+    - name: Install make
+      apt:
+        name: make
+    - name: Install mosh
+      apt:
+        name: mosh
+    - name: Install python3.6
+      apt:
+        name: python3.6
+    - name: Install supervisor
+      apt:
+        name: supervisor
+    - name: Install virtualenv
+      apt:
+        name: virtualenv
+    - name: Install zsh
+      apt:
+        name: zsh
+    - name: Set the ubuntu user's shell to zsh
+      user:
+        name: ubuntu
+        shell: /bin/zsh

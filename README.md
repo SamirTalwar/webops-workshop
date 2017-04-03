@@ -70,15 +70,7 @@ Topics include:
 
 ### Preparation
 
-Create an AWS server with Ubuntu 16.04 (Xenial), and save the PEM as *~/.ssh/\<something\>.pem* with a chmod of 600. Assuming we're using the [Predestination][] app, you'll need the following:
-
-```sh
-sudo add-apt-repository ppa:jonathonf/python-3.6
-sudo apt update
-sudo apt upgrade
-sudo apt install make mosh python3.6 supervisor virtualenv zsh
-sudo chsh -s zsh ubuntu
-```
+Create an AWS server with Ubuntu 16.04 (Xenial), and save the PEM as *~/.ssh/\<something\>.pem* with a chmod of 600.
 
 In the security group, open TCP ports 80, 443 and 8080, and UDP ports 60000-61000 (for Mosh).
 
@@ -90,6 +82,18 @@ Set up your SSH configuration by adding the following to *~/.ssh/config*:
 Host <hostname>
     User ubuntu
     IdentityFile <path to PEM file>
+```
+
+And set up your Ansible configuration by creating *ansible/inventory*:
+
+```
+<hostname> ansible_user=ubuntu ansible_ssh_private_key_file=<path to PEM file>
+```
+
+Assuming we're using the [Predestination][] app, you'll need the following too:
+
+```sh
+ansible-playbook ansible/prerequisites.yaml
 ```
 
 [Predestination]: https://github.com/SamirTalwar/predestination
@@ -220,3 +224,35 @@ And while we're at it, let's use a real hostname instead.
 *[Cut to the preset DNS settings, then show the site at the real hostname.]*
 
 [iptables How To]: https://help.ubuntu.com/community/IptablesHowTo
+
+### 00:45 — Can you imagine doing all this a second time?
+
+Now imagine this server breaks because, I don't know, we misconfigure iptables and disable SSH. It's in The Cloud™ so we have no access to the actual terminal. What we can do, though, is delete it and try again.
+
+Can you imagine doing that a second time? Ugh. Our website will be down for ages.
+
+Instead, we're going to use an infrastructure automation tool. My favourite is [Ansible][], which is what we're going to use today, but there are plenty of others. The most popular are [Puppet][], [Chef][] and [SaltStack][].
+
+In this repository you'll find an Ansible "playbook" that will configure a server just as we have. All you need to do is point it at the server you've already set up.
+
+```sh
+export ANSIBLE_INVENTORY=$PWD/ansible/inventory
+ansible all -m ping
+```
+
+Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file.
+
+*[Show the inventory file.]*
+
+Now let's get Ansible to configure our server. First we'll set up all the boring prerequisites—Make, Python, etc.
+
+*[Show ansible/prerequisites.yaml.]*
+
+```sh
+ansible-playbook ansible/prerequisites.yaml
+```
+
+[Ansible]: https://www.ansible.com/
+[Chef]: https://www.chef.io/chef/
+[Puppet]: https://puppet.com/
+[SaltStack]: https://saltstack.com/
