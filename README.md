@@ -13,7 +13,6 @@ Topics include:
   * keeping an eye on your server to make sure things are working,
   * tracking down production bugs,
   * managing persistent data (such as your database),
-  * secure communication over HTTPS,
   * and, if we have time, how to do all this in the buzzword of the decade, containers.
 
 ---
