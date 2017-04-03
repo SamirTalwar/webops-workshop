@@ -353,3 +353,20 @@ And whatever you do, don't store data text files on the server. It's the easiest
 [ElephantSQL]: https://www.elephantsql.com/
 [Compose]: https://compose.com/
 [Amazon RDS]: https://aws.amazon.com/rds/
+
+### 01:35 — So what's all this Docker business?
+
+Right. Here come the fireworks.
+
+[Docker][] is a useful way of packaging up an application to handle all this stuff for you. All you need is the Docker daemon on the server and you can run an application really easily. It can be instructed to re-run the application if it crashes, just like supervisord, and can be set up with Ansible or another deployment tool. It also ships with one of its own, called [Docker Compose][].
+
+Docker also packages everything. This means that you don't need to install anything on the server except Docker itself, as the *Docker image* that you build contains all the application dependencies. This includes Python (or whatever you want to use to make your web app).
+
+*[Launch the Docker image from ansible/predestination-docker.yaml.]*
+
+It's been around for a few years, so many don't consider it quite as stable as running on bare Linux, but personally, I think the convenience of packaging an entire application up locally is so good that I'm willing to make that trade-off. We no longer need to configure files on the server; we just instruct Docker to start a "container" from our image and away we go. It also means we can test our images locally and they'll work almost entirely the same, whether we're on Windows, macOS or Linux.
+
+Building Docker images is beyond the scope of this tutorial, but I encourage you to have a go with it.
+
+[Docker]: https://docs.docker.com/
+[Docker Compose]: https://docs.docker.com/compose/

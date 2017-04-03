@@ -16,6 +16,25 @@
     - name: Upgrade everything
       apt:
         upgrade: full
+    - name: Install apt-transport-https
+      apt:
+        name: apt-transport-https
+    - name: Install ca-certificates
+      apt:
+        name: ca-certificates
+    - name: Install curl
+      apt:
+        name: curl
+
+    - name: Grab the Docker GPG key
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    - name: Point the server at Docker CE
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+
+    - name: Install docker-ce
+      apt:
+        name: docker-ce
     - name: Install iptables-persistent
       apt:
         name: iptables-persistent
@@ -28,6 +47,9 @@
     - name: Install python3.6
       apt:
         name: python3.6
+    - name: Install python-pip
+      apt:
+        name: python-pip
     - name: Install supervisor
       apt:
         name: supervisor
@@ -41,3 +63,7 @@
       user:
         name: ubuntu
         shell: /bin/zsh
+
+    - name: Install docker-py
+      pip:
+        name: docker-py

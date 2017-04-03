@@ -1,0 +1,46 @@
+---
+- hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Remove the application directory
+      file:
+        path: /var/www/predestination
+        state: absent
+    # - name: Stop the application in the supervisor
+    #   supervisorctl:
+    #     name: predestination
+    #     state: stopped
+    - name: Remove the application from the supervisor
+      supervisorctl:
+        name: predestination
+        state: absent
+    - name: Clean up the supervisor
+      file:
+        path: /etc/supervisor/conf.d/predestination.conf
+        state: absent
+    - name: Forward port 80 to port 8080
+      iptables:
+        state: absent
+        table: nat
+        chain: PREROUTING
+        protocol: tcp
+        destination_port: 80
+        jump: REDIRECT
+        to_ports: 8080
+    - name: Save the iptables configuration
+      shell: iptables-save > /etc/iptables/rules.v4
+    - name: Remove the application user account
+      user:
+        name: web
+        shell: /bin/false
+        state: absent
+
+    - name: Run the application in Docker
+      docker_container:
+        name: predestination
+        image: samirtalwar/predestination
+        pull: yes
+        published_ports:
+          - 80:8080
+        restart_policy:  on-failure
