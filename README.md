@@ -313,3 +313,29 @@ Fortunately, the Internet will let me know. I've configured [Pingdom][] to tell 
 *[Show the emails that have inevitably been sent in the last hour.]*
 
 There are lots of tools just like Pingdom. Find the one you like. I recommend starting on a free trial to make sure it's right for you.
+
+### 01:20 — What if it breaks?
+
+It'd be nice to know what's going on on the server, especially if things are screwy. This is what logging is for.
+
+Let's say, for example, that I introduce a bug into our application.
+
+*[Introduce a bug. There's one on the `error-prone` branch if you're stuck for ideas.]*
+
+So, let's say I introduce a bug that stops the game. This is bad, right? How do I trace it?
+
+Well, your application logs are your friends. It's better if you actively put "log" statements in your application to tell you what's going on, but even if you don't, catastrophic errors will probably still be logged.
+
+Using `supervisorctl`, we can ask the supervisor daemon for the logs like this:
+
+```sh
+supervisorctl tail -f predestination stderr
+```
+
+(There's two output streams: STDOUT and STDERR. Logs usually go on STDERR, but you might want to check both, or configure the supervisor to merge them.)
+
+In this output stream, we can see what's called a "stack trace". This allows us to trace the error to the very line that's causing the problem.
+
+*[Show the line.]*
+
+Once we diagnose the problem, we can now fix the bug and redeploy, or roll back to a previous version.
