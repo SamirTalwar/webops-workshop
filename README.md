@@ -68,6 +68,24 @@ Topics include:
 
 ## Playbook
 
+### Preparation
+
+Create an AWS server with Ubuntu 16.04 (Xenial). Assuming we're using the [Predestination][] app, you'll need the following:
+
+```sh
+sudo add-apt-repository ppa:jonathonf/python-3.6
+sudo apt update
+sudo apt upgrade
+sudo apt install make mosh python3.6 supervisor virtualenv zsh
+sudo chsh -s zsh ubuntu
+```
+
+In the security group, open TCP ports 80, 443 and 8080, and UDP ports 60000-61000 (for Mosh).
+
+Create a hostname for it.
+
+[Predestination]: https://github.com/SamirTalwar/predestination
+
 ### 00:00 — Introduction
 
 A short introduction to deploying and running a website.
@@ -77,18 +95,6 @@ A short introduction to deploying and running a website.
 Hopefully not many people will have had trouble installing a VM and setting up SSH keys. In any case, pair them up, so only half of them need to.
 
 In case everyone has had issues, take 10 minutes to sort them all out.
-
-### 00:20 — Set up the server
-
-Preparation:
-
-```sh
-sudo apt update
-sudo apt upgrade
-sudo apt install zsh
-sudo chsh -s zsh ubuntu
-sudo apt install supervisor
-```
 
 ### 00:20 — Start a web app on the server
 
@@ -100,7 +106,7 @@ Pick an app that takes `PORT` as an environment variable.
 sudo add-apt-repository ppa:jonathonf/python-3.6
 sudo apt update
 sudo apt upgrade
-sudo apt install make virtualenv python3.6
+sudo apt install make python3.6 virtualenv
 make site-packages
 # run `make web` to start it
 ```
@@ -124,9 +130,7 @@ sudo --user=web PORT=8080 ./run
 
 *[Leave it running for a few seconds, then kill it again.]*
 
-[Predestination]: https://github.com/SamirTalwar/predestination
-
-### 00:25 — Keep it running
+### 00:30 — Keep it running
 
 Now, we can run the web server, but it's running in our terminal. We can't do anything else.
 
@@ -180,3 +184,31 @@ sudo supervisorctl
 And it's running in the background. Lovely.
 
 [Supervisor]: http://supervisord.org/
+
+### 00:40 — We're still on port 8080
+
+[iptables][iptables How To] to the rescue. We don't want to run our site as the root user, so we'll use iptables, a firewall and network routing service that comes preinstalled on basically every Linux box, to route traffic from port 80 to port 8080.
+
+It's as simple as this:
+
+```sh
+sudo iptables --table=nat --append=PREROUTING --proto=tcp --dport=80 --jump=REDIRECT --to-port=8080
+```
+
+You can check it's there with `sudo iptables --table=nat --list`. We should now be able to talk to our site without specifying a port.
+
+*[Delete the port from the URL.]*
+
+iptables isn't persistent. However, we can install the *iptables-persistent* package to automatically load rules from a file on startup. Then all we need to do is run the following each time we change them:
+
+```sh
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+```
+
+(We have to run the whole thing in a subshell because otherwise we can't redirect to that file; it's owned by *root*.)
+
+And while we're at it, let's use a real hostname instead. 
+
+*[Cut to the preset DNS settings, then show the site at the real hostname.]*
+
+[iptables How To]: https://help.ubuntu.com/community/IptablesHowTo
