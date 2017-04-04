@@ -314,6 +314,8 @@ Fortunately, the Internet will let me know. I've configured [Pingdom][] to tell 
 
 There are lots of tools just like Pingdom. Find the one you like. I recommend starting on a free trial to make sure it's right for you.
 
+[Pingdom]: https://www.pingdom.com/
+
 ### 01:20 — What if it breaks?
 
 It'd be nice to know what's going on on the server, especially if things are screwy. This is what logging is for.
