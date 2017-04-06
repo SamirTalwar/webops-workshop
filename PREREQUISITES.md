@@ -23,6 +23,10 @@ Install:
 2. An SSH key. You may have one already. If so, skip this.
     1. If you're running on macOS, Linux, or Bash on Windows, it will be located at *~/.ssh/id_rsa* or *~/.ssh/id_dsa*. If not, just run `ssh-keygen`.
     2. If you're using PuTTY, run *puttygen.exe*.
+3. [Ansible][].
+4. [mosh][] (if available for your platform), which is like SSH (and uses it to bootstrap itself) but can handle flaky connections much more gracefully.
+
+[Ansible]: https://www.ansible.com/
 
 ## 2a. Create an Ubuntu VM with an image I made earlier
 
@@ -42,11 +46,15 @@ If you'd rather not use this VM, you can create one yourself as described in ste
    ```
 8. Copy the SSH key to the server VM (you'll need to provide your password for each command):
    ```sh
-   ssh webops mkdir ~/.ssh
-   scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
+   $ ssh webops mkdir ~/.ssh
+   $ scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
    ```
 9. SSH in with `ssh webops`. You shouldn't need your password.
 10. Shut the VM down and take a snapshot.
+11. Create a file called *ansible/inventory*:
+    ```
+    <VM IP> ansible_user=webops
+    ```
 
 ## 2b. Create your own Ubuntu VM
 
@@ -79,11 +87,15 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
     ```
 17. Copy the SSH key to the server VM (you'll need to provide your password for each command):
     ```sh
-    ssh webops mkdir ~/.ssh
-    scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
+    $ ssh webops mkdir ~/.ssh
+    $ scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
     ```
 18. SSH in with `ssh webops`. You shouldn't need your password.
 19. Shut the VM down and take a snapshot.
+20. Create a file called *ansible/inventory*:
+    ```
+    <VM IP> ansible_user=webops
+    ```
 
 [Bash on Windows Installation Guide]: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
 [PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
@@ -101,22 +113,22 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
        User ubuntu
        IdentityFile <path to PEM file>
    ```
-4. Set up your Ansible configuration by creating *ansible/inventory*:
+5. SSH in with `ssh webops`. You shouldn't need a password. Once you've proven that you can, disconnect.
+6. Create a file called *ansible/inventory*:
    ```
    <hostname> ansible_user=ubuntu ansible_ssh_private_key_file=<path to PEM file>
    ```
-5. SSH in with `ssh webops`. You shouldn't need your password.
 
 ## 2d. Create your own VM on another cloud provider
 
-You're on your own for this one. Make sure it runs Ubuntu and away you go.
+You're on your own for this one. Make sure it runs Ubuntu, follow the instructions for AWS as best you can, and away you go.
 
 ## 3. Install the necessary dependencies
 
-Assuming we're using the [Predestination][] app, you'll need the following too:
+Assuming we're using the [Predestination][] app, you'll need the following too. Don't worry how it works for now. All will be explained later.
 
 ```sh
-ansible-playbook ansible/prerequisites.yaml
+$ ansible-playbook ansible/prerequisites.yaml
 ```
 
 [Predestination]: https://github.com/SamirTalwar/predestination

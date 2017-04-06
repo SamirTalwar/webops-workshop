@@ -1,5 +1,9 @@
 # Playbook
 
+I'm using `$` to denote commands to be run on your local machine, and `%` to denote commands to be run on the server.
+
+Instructions for the presenter that require leaving the terminal are in *[italicised brackets]*.
+
 ## 00:00 — Introduction
 
 A short introduction to deploying and running a website.
@@ -12,36 +16,37 @@ In case everyone has had issues, take 10 minutes to sort them all out.
 
 ## 00:20 — Start a web app on the server
 
-Pick an app that takes `PORT` as an environment variable.
+Pick a web application that takes `PORT` as an environment variable. This tutorial will assume you're using an app I wrote called [Predestination][].  If you pick a different application, change `./web` to however you start it.
 
-[Here's one I wrote][Predestination], in case you're stuck. If you use it:
+Log in to the server. (I'm using `mosh` here, but you can use `ssh` if you prefer it or you don't have a choice (i.e. you're on Windows).)
 
 ```sh
-sudo add-apt-repository ppa:jonathonf/python-3.6
-sudo apt update
-sudo apt upgrade
-sudo apt install make python3.6 virtualenv
-make site-packages
-# run `./web` to start it
+$ mosh webops
 ```
 
-If you're not using Predestination, change `./web` to however you start your application.
+Clone the repository and install its dependencies:
+
+```sh
+% git clone https://github.com/SamirTalwar/predestination.git
+% cd predestination
+% make site-packages
+```
 
 Then run it:
 
 ```sh
-PORT=8080 ./web # or however you start the application
+% PORT=8080 ./web # or however you start the application
 ```
 
-*[Browse to the URL and show it off. If possible, leave the browser window open. It will automatically reconnect if you terminate the server and restart it.]*
+*[Browse to the URL and show it off. If possible, leave the browser window open. It *may* automatically reconnect if you terminate the server and restart it, but I wouldn't bank on it.]*
 
 Note that we're using the port 8080. HTTP usually runs over port 80, but we can't start an application there without it running as *root*, and we don't want to do that, as an attacker compromising the web server could get access to anything else.
 
 In fact, we probably want to make sure the application has as few rights as possible. So let's create a user just for that.
 
 ```sh
-sudo useradd web
-sudo --user=web PORT=8080 ./web
+% sudo useradd web
+% sudo --user=web PORT=8080 ./web
 ```
 
 *[Leave it running for a few seconds, then kill it again.]*
@@ -53,13 +58,13 @@ Now, we can run the web server, but it's running in our terminal. We can't do an
 So run it in the background.
 
 ```sh
-sudo --user=web PORT=8080 ./web &
+% sudo --user=web PORT=8080 ./web &
 ```
 
 … Sort of works. It's still tied to this TTY (terminal), and its output is interfering with our work. We can redirect it to a file:
 
 ```sh
-sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
+% sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
 ```
 
 If we lose SSH connection, the site might go down.
@@ -69,7 +74,7 @@ If we lose SSH connection, the site might go down.
 You can use `nohup` to disconnect the process from the terminal.
 
 ```sh
-nohup sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
+% nohup sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
 ```
 
 This isn't great, though. What if we want to stop the application? We have to write down the PID? And remember to kill it? We can't just start a new version over the top—it won't even start, because the port is taken.
@@ -84,7 +89,7 @@ So let's configure it to run our application.
 
 ```
 [program:site]
-command=/home/ubuntu/site/web
+command=/home/ubuntu/predestination/web
 environment=PORT=8080
 user=web
 ```
@@ -92,9 +97,12 @@ user=web
 Now we just tell `supervisorctl`, the control program, to reload its configuration.
 
 ```sh
-sudo supervisorctl
+% sudo supervisorctl
 > restart
 > status
+... wait 10 seconds
+> status
+> exit
 ```
 
 And it's running in the background. Lovely.
@@ -108,7 +116,7 @@ And it's running in the background. Lovely.
 It's as simple as this:
 
 ```sh
-sudo iptables --table=nat --append=PREROUTING --proto=tcp --dport=80 --jump=REDIRECT --to-port=8080
+% sudo iptables --table=nat --append=PREROUTING --proto=tcp --dport=80 --jump=REDIRECT --to-port=8080
 ```
 
 You can check it's there with `sudo iptables --table=nat --list`. We should now be able to talk to our site without specifying a port.
@@ -118,14 +126,12 @@ You can check it's there with `sudo iptables --table=nat --list`. We should now 
 iptables isn't persistent. However, we can install the *iptables-persistent* package to automatically load rules from a file on startup. Then all we need to do is run the following each time we change them:
 
 ```sh
-sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+% sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 ```
 
 (We have to run the whole thing in a subshell because otherwise we can't redirect to that file; it's owned by *root*.)
 
-And while we're at it, let's use a real hostname instead.
-
-*[Cut to the preset DNS settings, then show the site at the real hostname.]*
+Now disconnect from the server with *Ctrl+D* or `exit`.
 
 [iptables How To]: https://help.ubuntu.com/community/IptablesHowTo
 
@@ -137,24 +143,18 @@ Can you imagine doing that a second time? Ugh. Our website will be down for ages
 
 Instead, we're going to use an infrastructure automation tool. My favourite is [Ansible][], which is what we're going to use today, but there are plenty of others. The most popular are [Puppet][], [Chef][] and [SaltStack][].
 
-In this repository you'll find an Ansible "playbook" that will configure a server just as we have. All you need to do is point it at the server you've already set up.
-
-```sh
-export ANSIBLE_INVENTORY=$PWD/ansible/inventory
-ansible all -m ping
-```
-
-Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file.
+Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file. You've already created one called *ansible/inventory*.
 
 *[Show the inventory file.]*
 
-Now let's get Ansible to configure our server. First we'll set up all the boring prerequisites—Make, Python, etc.
-
-*[Show ansible/prerequisites.yaml.]*
+Let's try it.
 
 ```sh
-ansible-playbook ansible/prerequisites.yaml
+$ export ANSIBLE_INVENTORY=$PWD/ansible/inventory
+$ ansible all -m ping
 ```
+
+That pings all the servers to ensure they're responding over SSH.
 
 Now we'll set up the application:
 
@@ -163,6 +163,8 @@ ansible-playbook ansible/predestination.yaml
 ```
 
 Voila. Nothing changed (except the application going down for a few seconds). That's because we mostly did all the work already. You'll note that the supervisor was, however, reconfigured—that's because the application was moved from */home/ubuntu/predestination* to */var/www/predestination*.
+
+*[Show the playbook and talk through it.]*
 
 Using Ansible (or whatever else), we can easily throw away this server and set up a new one in just a few clicks.
 
@@ -177,7 +179,7 @@ Let's make it blue.
 
 *[Change it to blue. Can't be that hard. Try `#147086`.]*
 
-All we need to do is make a couple of changes to the Ansible playbook. We'll add the following lines to the "clone" section:
+All we need to do is make a couple of changes to the Ansible playbook. We'll add the following lines to the "Clone the repository" section:
 
 ```
         version: blue
@@ -222,9 +224,11 @@ There are lots of tools just like Pingdom. Find the one you like. I recommend st
 
 It'd be nice to know what's going on on the server, especially if things are screwy. This is what logging is for.
 
-Let's say, for example, that I introduce a bug into our application.
+Let's say, for example, that we introduce a bug into our application.
 
-*[Introduce a bug. There's one on the `error-prone` branch if you're stuck for ideas.]*
+```sh
+$ ansible-playbook ansible/predestination-broken.yaml
+```
 
 So, let's say I introduce a bug that stops the game. This is bad, right? How do I trace it?
 
@@ -243,6 +247,10 @@ In this output stream, we can see what's called a "stack trace". This allows us 
 *[Show the line.]*
 
 Once we diagnose the problem, we can now fix the bug and redeploy, or roll back to a previous version.
+
+```sh
+$ ansible-playbook ansible/predestination.yaml
+```
 
 ## 01:30 — How do I store data?
 
@@ -266,7 +274,13 @@ Right. Here come the fireworks.
 
 Docker also packages everything. This means that you don't need to install anything on the server except Docker itself, as the *Docker image* that you build contains all the application dependencies. This includes Python (or whatever you want to use to make your web app).
 
-*[Launch the Docker image from ansible/predestination-docker.yaml.]*
+```sh
+$ ansible-playbook ansible/predestination-docker.yaml
+```
+
+This Ansible playbook removes everything we set up earlier, including the supervisor configuration, iptables rules and the application itself. It then deploys predestination from the publicly-available [samirtalwar/predestination] Docker image.
+
+*[Talk through the new playbook.]*
 
 It's been around for a few years, so many don't consider it quite as stable as running on bare Linux, but personally, I think the convenience of packaging an entire application up locally is so good that I'm willing to make that trade-off. We no longer need to configure files on the server; we just instruct Docker to start a "container" from our image and away we go. It also means we can test our images locally and they'll work almost entirely the same, whether we're on Windows, macOS or Linux.
 
