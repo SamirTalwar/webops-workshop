@@ -26,7 +26,10 @@ Install:
 3. [Ansible][].
 4. [mosh][] (if available for your platform), which is like SSH (and uses it to bootstrap itself) but can handle flaky connections much more gracefully.
 
+[Bash on Windows Installation Guide]: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
+[PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
 [Ansible]: https://www.ansible.com/
+[mosh]: TODO
 
 ## 2a. Create an Ubuntu VM with an image I made earlier
 
@@ -55,6 +58,9 @@ If you'd rather not use this VM, you can create one yourself as described in ste
     ```
     <VM IP> ansible_user=webops
     ```
+
+[webops-workshop.ova]: TODO
+[VirtualBox]: https://www.virtualbox.org/
 
 ## 2b. Create your own Ubuntu VM
 
@@ -97,10 +103,7 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
     <VM IP> ansible_user=webops
     ```
 
-[Bash on Windows Installation Guide]: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
-[PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
 [Download Ubuntu Server]: https://www.ubuntu.com/download/server
-[VirtualBox]: https://www.virtualbox.org/
 
 ## 2c. Create your own VM on Amazon Web Services
 
