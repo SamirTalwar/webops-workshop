@@ -40,7 +40,12 @@ If you'd rather not use this VM, you can create one yourself as described in ste
 3. Once it's imported, click "Network" and add a second "Host-Only" network adapter.
 4. Remember that the username is "webops" and the password is "let me in please".
 5. Start the VM.
-6. Get the VM's IP address (`ip address`).
+6. Get the VM's IP address (`ip address`). It probably has more than one. If you don't have a 192.168.x.x address, you'll need to edit */etc/network/interfaces* and add the following lines:
+   ```
+   auto enp0s8
+   iface enp0s8 inet dhcp
+   ```
+   Then run `sudo service networking restart`.
 7. Set up your SSH configuration by adding the following to *~/.ssh/config*:
    ```
    Host webops
@@ -84,7 +89,12 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
 12. Update (`sudo apt update`) and upgrade (`sudo apt upgrade`).
 13. Install OpenSSH (`sudo apt install openssh-server`).
 14. Reboot to ensure everything's working.
-15. Get the VM's IP address (`ip address`). It probably has more than one.
+15. Get the VM's IP address (`ip address`). It probably has more than one. If you don't have a 192.168.x.x address, you'll need to edit */etc/network/interfaces* and add the following lines:
+    ```
+    auto enp0s8
+    iface enp0s8 inet dhcp
+    ```
+    Then run `sudo service networking restart`.
 16. Set up your SSH configuration by adding the following to *~/.ssh/config*:
     ```
     Host webops
