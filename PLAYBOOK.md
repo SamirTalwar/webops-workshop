@@ -113,7 +113,7 @@ And it's running in the background. Lovely.
 
 [nginx][] to the rescue. We don't want to run our site as the root user, so we'll use nginx, an HTTP server, to route traffic from port 80 to port 8080.
 
-Delete */etc/nginx/conf.d/default.conf*, and create a file called */etc/nginx/conf.d/predestination.conf*:
+Delete */etc/nginx/sites-enabled/default*, and create a file called */etc/nginx/sites-enabled/predestination*:
 
 ```
 server {

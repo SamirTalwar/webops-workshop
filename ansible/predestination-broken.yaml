@@ -28,7 +28,7 @@
     - name: Set up the supervisor for the application
       copy:
         src: ../supervisor/predestination.conf
-        dest: /etc/supervisor/conf.d/predestination.conf
+        dest: /etc/nginx/sites-enabled/predestination
     - name: Reload the supervisor
       service:
         name: supervisor

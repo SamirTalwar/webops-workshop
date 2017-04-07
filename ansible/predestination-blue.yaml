@@ -40,7 +40,7 @@
     - name: Forward port 80 to port 8080
       copy:
         src: ../nginx/predestination.conf
-        dest: /etc/nginx/sites-enabled/predestination.conf
+        dest: /etc/nginx/sites-enabled/predestination
     - name: Disable the default nginx configuration
       file:
         path: /etc/nginx/sites-enabled/default
