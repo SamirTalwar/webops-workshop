@@ -35,15 +35,15 @@
     - name: Install docker-ce
       apt:
         name: docker-ce
-    - name: Install iptables-persistent
-      apt:
-        name: iptables-persistent
     - name: Install make
       apt:
         name: make
     - name: Install mosh
       apt:
         name: mosh
+    - name: Install nginx
+      apt:
+        name: nginx
     - name: Install python3.6
       apt:
         name: python3.6

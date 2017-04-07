@@ -7,10 +7,10 @@
       file:
         path: /var/www/predestination
         state: absent
-    # - name: Stop the application in the supervisor
-    #   supervisorctl:
-    #     name: predestination
-    #     state: stopped
+    - name: Stop the application in the supervisor
+      supervisorctl:
+        name: predestination
+        state: stopped
     - name: Remove the application from the supervisor
       supervisorctl:
         name: predestination
@@ -19,17 +19,10 @@
       file:
         path: /etc/supervisor/conf.d/predestination.conf
         state: absent
-    - name: Forward port 80 to port 8080
-      iptables:
+    - name: Stop forwarding port 80 to port 8080
+      file:
+        path: /etc/nginx/sites-enabled/predestination.conf
         state: absent
-        table: nat
-        chain: PREROUTING
-        protocol: tcp
-        destination_port: 80
-        jump: REDIRECT
-        to_ports: 8080
-    - name: Save the iptables configuration
-      shell: iptables-save > /etc/iptables/rules.v4
     - name: Remove the application user account
       user:
         name: web

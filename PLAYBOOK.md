@@ -111,33 +111,41 @@ And it's running in the background. Lovely.
 
 ## 00:40 — We're still on port 8080
 
-[iptables][iptables How To] to the rescue. We don't want to run our site as the root user, so we'll use iptables, a firewall and network routing service that comes preinstalled on basically every Linux box, to route traffic from port 80 to port 8080.
+[nginx][] to the rescue. We don't want to run our site as the root user, so we'll use nginx, an HTTP server, to route traffic from port 80 to port 8080.
 
-It's as simple as this:
+Delete */etc/nginx/conf.d/default.conf*, and create a file called */etc/nginx/conf.d/predestination.conf*:
 
-```sh
-% sudo iptables --table=nat --append=PREROUTING --proto=tcp --dport=80 --jump=REDIRECT --to-port=8080
+```
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  server_name _;
+
+  location / {
+    proxy_pass http://localhost:8080;
+  }
+}
 ```
 
-You can check it's there with `sudo iptables --table=nat --list`. We should now be able to talk to our site without specifying a port.
+Next, reload nginx:
 
-*[Delete the port from the URL.]*
-
-iptables isn't persistent. However, we can install the *iptables-persistent* package to automatically load rules from a file on startup. Then all we need to do is run the following each time we change them:
-
-```sh
-% sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+```
+% nginx -s reload
 ```
 
-(We have to run the whole thing in a subshell because otherwise we can't redirect to that file; it's owned by *root*.)
+We should now be able to talk to our site without specifying a port.
 
-Now disconnect from the server with *Ctrl+D* or `exit`.
+*[Delete the port from the URL and make sure it works.]*
 
-[iptables How To]: https://help.ubuntu.com/community/IptablesHowTo
+You might find that while the game loads, it doesn't run. If that's the case, it's because I wrote this on a plane and couldn't get Websockets to forward properly. You can force the application to use HTTP polling rather than Websockets by adding the `TRANSPORTS=polling` environment variable to the supervisor file and reloading the application with `supervisorctl reread`.
+
+[nginx]: https://nginx.org/
+
+Great job. Your site is up. Now disconnect from the server with *Ctrl+D* or `exit`.
 
 ## 00:45 — Can you imagine doing all this a second time?
 
-Now imagine this server breaks because, I don't know, we misconfigure iptables and disable SSH. It's in The Cloud™ so we have no access to the actual terminal. What we can do, though, is delete it and try again.
+Now imagine this server breaks because, I don't know, we misconfigure the server and disable SSH. It's in The Cloud™ so we have no access to the actual terminal. What we can do, though, is delete it and try again.
 
 Can you imagine doing that a second time? Ugh. Our website will be down for ages.
 
@@ -278,7 +286,7 @@ Docker also packages everything. This means that you don't need to install anyth
 $ ansible-playbook ansible/predestination-docker.yaml
 ```
 
-This Ansible playbook removes everything we set up earlier, including the supervisor configuration, iptables rules and the application itself. It then deploys predestination from the publicly-available [samirtalwar/predestination] Docker image.
+This Ansible playbook removes everything we set up earlier, including the supervisor configuration, nginx configuration and the application itself. It then deploys predestination from the publicly-available [samirtalwar/predestination] Docker image.
 
 *[Talk through the new playbook.]*
 
