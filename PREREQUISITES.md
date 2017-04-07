@@ -37,7 +37,7 @@ If you'd rather not use this VM, you can create one yourself as described in ste
 
 1. [Download the VM image.][webops-workshop.ova]
 2. Import the *.ova* file into [VirtualBox][].
-3. Once it's imported, click "Network" and change the network from "NAT" to "Bridged Adapter".
+3. Once it's imported, click "Network" and add a second "Host-Only" network adapter.
 4. Remember that the username is "webops" and the password is "let me in please".
 5. Start the VM.
 6. Get the VM's IP address (`ip address`).
@@ -72,7 +72,7 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
 4. Give it 2048 MB of RAM.
 5. Allow it to create a hard disk, with all the defaults.
 6. Once it's created, click "Storage" and assign the ISO to the optical drive.
-7. Hop over to the "Network" tab and change the network from "NAT" to "Bridged Adapter".
+7. Hop over to the "Network" tab and add a second "Host-Only" network adapter.
 8. Start the VM.
 9. Install Ubuntu. If the setting is not mentioned below, go with the default.
     1. Pick an appropriate language, keyboard layout, time zone, etc.
@@ -84,7 +84,7 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
 12. Update (`sudo apt update`) and upgrade (`sudo apt upgrade`).
 13. Install OpenSSH (`sudo apt install openssh-server`).
 14. Reboot to ensure everything's working.
-15. Get the VM's IP address (`ip address`).
+15. Get the VM's IP address (`ip address`). It probably has more than one.
 16. Set up your SSH configuration by adding the following to *~/.ssh/config*:
     ```
     Host webops
@@ -133,5 +133,7 @@ Assuming we're using the [Predestination][] app, you'll need the following too. 
 ```sh
 $ ansible-playbook ansible/prerequisites.yaml
 ```
+
+(If it fails because you need your password to `sudo`, add the `--ask-sudo-pass` switch to the end.)
 
 [Predestination]: https://github.com/SamirTalwar/predestination
