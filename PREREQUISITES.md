@@ -61,8 +61,8 @@ If you'd rather not use this VM, you can create one yourself as described in ste
    ```
 9. Copy the SSH key to the server VM (you'll need to provide your password for each command):
    ```sh
-   $ ssh webops mkdir ~/.ssh
-   $ scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
+   $ ssh webops mkdir /home/webops/.ssh
+   $ scp ~/.ssh/id_rsa.pub webops:/home/webops/.ssh/authorized_keys
    ```
 10. SSH in with `ssh webops`. You shouldn't need your password.
 11. Shut the VM down and take a snapshot.
@@ -111,8 +111,8 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
     ```
 18. Copy the SSH key to the server VM (you'll need to provide your password for each command):
     ```sh
-    $ ssh webops mkdir ~/.ssh
-    $ scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
+    $ ssh webops mkdir /home/webops/.ssh
+    $ scp ~/.ssh/id_rsa.pub webops:/home/webops/.ssh/authorized_keys
     ```
 19. SSH in with `ssh webops`. You shouldn't need your password.
 20. Shut the VM down and take a snapshot.
