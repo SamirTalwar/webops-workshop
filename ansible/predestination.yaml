@@ -35,10 +35,6 @@
       supervisorctl:
         name: predestination
         state: restarted
-    - name: Restart the application
-      supervisorctl:
-        name: predestination
-        state: restarted
     - name: Forward port 80 to port 8080
       copy:
         src: ../nginx/predestination.conf
