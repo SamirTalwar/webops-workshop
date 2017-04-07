@@ -3,10 +3,15 @@
   remote_user: root
   become: yes
   tasks:
+    - name: Point the server at certbot
+      apt_repository:
+        repo: ppa:certbot/certbot
+        update_cache: no
     - name: Point the server at Python 3.6
       apt_repository:
         repo: ppa:jonathonf/python-3.6
         update_cache: no
+
     - name: Update the APT repositories
       apt:
         update_cache: yes
@@ -32,6 +37,9 @@
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
 
+    - name: Install certbot
+      apt:
+        name: certbot
     - name: Install docker-ce
       apt:
         name: docker-ce
