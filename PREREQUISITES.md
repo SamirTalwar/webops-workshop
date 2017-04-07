@@ -29,7 +29,7 @@ Install:
 [Bash on Windows Installation Guide]: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
 [PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
 [Ansible]: https://www.ansible.com/
-[mosh]: TODO
+[mosh]: https://mosh.org/
 
 ## 2a. Create an Ubuntu VM with an image I made earlier
 
@@ -59,7 +59,7 @@ If you'd rather not use this VM, you can create one yourself as described in ste
     <VM IP> ansible_user=webops
     ```
 
-[webops-workshop.ova]: TODO
+[webops-workshop.ova]: https://s3-eu-west-1.amazonaws.com/noodlesandwich.com/talks/webops/ubuntu-vm.ova
 [VirtualBox]: https://www.virtualbox.org/
 
 ## 2b. Create your own Ubuntu VM
