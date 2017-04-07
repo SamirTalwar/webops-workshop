@@ -26,6 +26,8 @@ Install:
 3. [Ansible][].
 4. [mosh][] (if available for your platform), which is like SSH (and uses it to bootstrap itself) but can handle flaky connections much more gracefully.
 
+Then clone this repository. All local commands are expected to be run from the root of this repository.
+
 [Bash on Windows Installation Guide]: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
 [PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
 [Ansible]: https://www.ansible.com/
@@ -40,26 +42,31 @@ If you'd rather not use this VM, you can create one yourself as described in ste
 3. Once it's imported, click "Network" and add a second "Host-Only" network adapter.
 4. Remember that the username is "webops" and the password is "let me in please".
 5. Start the VM.
-6. Get the VM's IP address (`ip address`). It probably has more than one. If you don't have a 192.168.x.x address, you'll need to edit */etc/network/interfaces* and add the following lines:
+6. Install Python, because I forgot:
+   ```
+   % sudo apt update
+   % sudo apt install python
+   ```
+7. Get the VM's IP address (`ip address`). It probably has more than one. If you don't have a 192.168.x.x address, you'll need to edit */etc/network/interfaces* and add the following lines:
    ```
    auto enp0s8
    iface enp0s8 inet dhcp
    ```
    Then run `sudo service networking restart`.
-7. Set up your SSH configuration by adding the following to *~/.ssh/config*:
+8. Set up your SSH configuration by adding the following to *~/.ssh/config*:
    ```
    Host webops
        Hostname <VM IP>
        User webops
    ```
-8. Copy the SSH key to the server VM (you'll need to provide your password for each command):
+9. Copy the SSH key to the server VM (you'll need to provide your password for each command):
    ```sh
    $ ssh webops mkdir ~/.ssh
    $ scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
    ```
-9. SSH in with `ssh webops`. You shouldn't need your password.
-10. Shut the VM down and take a snapshot.
-11. Create a file called *ansible/inventory*:
+10. SSH in with `ssh webops`. You shouldn't need your password.
+11. Shut the VM down and take a snapshot.
+12. Create a file called *ansible/inventory* on the host machine:
     ```
     <VM IP> ansible_user=webops
     ```
@@ -88,27 +95,28 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
 11. Log in.
 12. Update (`sudo apt update`) and upgrade (`sudo apt upgrade`).
 13. Install OpenSSH (`sudo apt install openssh-server`).
-14. Reboot to ensure everything's working.
-15. Get the VM's IP address (`ip address`). It probably has more than one. If you don't have a 192.168.x.x address, you'll need to edit */etc/network/interfaces* and add the following lines:
+14. Install Python (`sudo apt install python`).
+15. Reboot to ensure everything's working.
+16. Get the VM's IP address (`ip address`). It probably has more than one. If you don't have a 192.168.x.x address, you'll need to edit */etc/network/interfaces* and add the following lines:
     ```
     auto enp0s8
     iface enp0s8 inet dhcp
     ```
     Then run `sudo service networking restart`.
-16. Set up your SSH configuration by adding the following to *~/.ssh/config*:
+17. Set up your SSH configuration by adding the following to *~/.ssh/config*:
     ```
     Host webops
         Hostname <VM IP>
         User webops
     ```
-17. Copy the SSH key to the server VM (you'll need to provide your password for each command):
+18. Copy the SSH key to the server VM (you'll need to provide your password for each command):
     ```sh
     $ ssh webops mkdir ~/.ssh
     $ scp ~/.ssh/id_rsa.pub webops:~/.ssh/authorized_keys
     ```
-18. SSH in with `ssh webops`. You shouldn't need your password.
-19. Shut the VM down and take a snapshot.
-20. Create a file called *ansible/inventory*:
+19. SSH in with `ssh webops`. You shouldn't need your password.
+20. Shut the VM down and take a snapshot.
+21. Create a file called *ansible/inventory* on the host machine:
     ```
     <VM IP> ansible_user=webops
     ```
@@ -127,7 +135,7 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
        IdentityFile <path to PEM file>
    ```
 5. SSH in with `ssh webops`. You shouldn't need a password. Once you've proven that you can, disconnect.
-6. Create a file called *ansible/inventory*:
+6. Create a file called *ansible/inventory* on the host machine:
    ```
    <hostname> ansible_user=ubuntu ansible_ssh_private_key_file=<path to PEM file>
    ```
@@ -138,12 +146,17 @@ You're on your own for this one. Make sure it runs Ubuntu, follow the instructio
 
 ## 3. Install the necessary dependencies
 
+If the VM is stopped, start it.
+
 Assuming we're using the [Predestination][] app, you'll need the following too. Don't worry how it works for now. All will be explained later.
 
 ```sh
+$ export ANSIBLE_INVENTORY=ansible/inventory
 $ ansible-playbook ansible/prerequisites.yaml
 ```
 
-(If it fails because you need your password to `sudo`, add the `--ask-sudo-pass` switch to the end.)
+If it fails, try SSHing in manually once with `ssh webops`, then disconnecting and trying again.
+
+If it fails because you need your password to `sudo`, add the `--ask-sudo-pass` switch to the end.
 
 [Predestination]: https://github.com/SamirTalwar/predestination
