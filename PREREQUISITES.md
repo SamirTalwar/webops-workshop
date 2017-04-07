@@ -134,8 +134,10 @@ A fresh [Ubuntu Server 16.04.2 LTS][Download Ubuntu Server] virtual machine. Thi
        User ubuntu
        IdentityFile <path to PEM file>
    ```
-5. SSH in with `ssh webops`. You shouldn't need a password. Once you've proven that you can, disconnect.
-6. Create a file called *ansible/inventory* on the host machine:
+5. SSH in with `ssh webops`. You shouldn't need a password.
+6. Install Python (`sudo apt install python`).
+7. Disconnect with `exit` or *Ctrl+D*.
+8. Create a file called *ansible/inventory* on the host machine:
    ```
    <hostname> ansible_user=ubuntu ansible_ssh_private_key_file=<path to PEM file>
    ```
