@@ -1,0 +1,32 @@
+---
+- hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Remove the application directory
+      file:
+        path: /var/www/predestination
+        state: absent
+    - name: Stop the application in the supervisor
+      ignore_errors: yes
+      supervisorctl:
+        name: predestination
+        state: stopped
+    - name: Remove the application from the supervisor
+      supervisorctl:
+        name: predestination
+        state: absent
+    - name: Clean up the supervisor
+      file:
+        path: /etc/supervisor/conf.d/predestination.conf
+        state: absent
+    - name: Stop forwarding port 80 to port 8080
+      file:
+        path: /etc/nginx/sites-enabled/predestination.conf
+        state: absent
+    - name: Remove the application user account
+      user:
+        name: web
+        shell: /bin/false
+        state: absent
+

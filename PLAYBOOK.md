@@ -283,10 +283,11 @@ Right. Here come the fireworks.
 Docker also packages everything. This means that you don't need to install anything on the server except Docker itself, as the *Docker image* that you build contains all the application dependencies. This includes Python (or whatever you want to use to make your web app).
 
 ```sh
+$ ansible-playbook ansible/predestination-undo.yaml
 $ ansible-playbook ansible/predestination-docker.yaml
 ```
 
-This Ansible playbook removes everything we set up earlier, including the supervisor configuration, nginx configuration and the application itself. It then deploys predestination from the publicly-available [samirtalwar/predestination] Docker image.
+The first Ansible playbook removes everything we set up earlier, including the supervisor configuration, nginx configuration and the application itself. The second deploys predestination from the publicly-available [samirtalwar/predestination] Docker image.
 
 *[Talk through the new playbook.]*
 
