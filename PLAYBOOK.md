@@ -150,7 +150,7 @@ We should now be able to talk to our site without specifying a port.
 
 *[Delete the port from the URL and make sure it works.]*
 
-You might find that while the game loads, it doesn't run. If that's the case, it's because I wrote this on a plane and couldn't get Websockets to forward properly. You can force the application to use HTTP polling rather than Websockets by adding the `TRANSPORTS=polling` environment variable to the supervisor file and reloading the application with `supervisorctl reread`.
+You might find that while the game loads, it doesn't run. If that's the case, it's probably because WebSockets aren't proxying correctly (sorry about that). You can force the application to use HTTP polling rather than Websockets by adding the `TRANSPORTS=polling` environment variable to the supervisor file and reloading the application with `supervisorctl reread`.
 
 [nginx]: https://nginx.org/
 
