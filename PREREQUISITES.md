@@ -13,14 +13,16 @@ Install:
 2. An SSH key specifically for the job.
     1. If you're running on macOS, Linux, or Bash on Windows, run `ssh-keygen` and store the key at *~/.ssh/webops*. (You may need to replace "~" with the absolute path to your home directory.)
     2. If you're using PuTTY, run *puttygen.exe* and name the key "webops".
-3. [Ansible][].
-4. [mosh][] (if available for your platform), which is like SSH (and uses it to bootstrap itself) but can handle flaky connections much more gracefully.
+3. [Terraform][].
+4. [Ansible][].
+5. [mosh][] (if available for your platform), which is like SSH (and uses it to bootstrap itself) but can handle flaky connections much more gracefully.
 
 Then clone this repository. All local commands are expected to be run from the root of this repository unless specified otherwise.
 
+[Ansible]: https://www.ansible.com/
 [Bash on Windows Installation Guide]: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
 [PuTTY]: http://www.chiark.greenend.org.uk/~sgtatham/putty/
-[Ansible]: https://www.ansible.com/
+[Terraform]: https://www.terraform.io/
 [mosh]: https://mosh.org/
 
 ## 2. Create a server
