@@ -1,2 +1,5 @@
 ansible/inventory
 ansible/*.retry
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.*

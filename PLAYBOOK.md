@@ -4,13 +4,26 @@ I'm using `$` to denote commands to be run on your local machine, and `%` to den
 
 Instructions for the presenter that require leaving the terminal are in *[italicised brackets]*.
 
-## 00:00 — Introduction
+## 00:00 — Pair everyone up and create their instances
+
+Hopefully this is just a matter of changing the `count` variable and re-running `terraform apply`.
+
+## 00:05 — Introduction
 
 A short introduction to deploying and running a website.
 
-## 00:10 — Make sure everyone has a machine working
+## 00:10 — Distribute connection details
 
-Hopefully not many people will have had trouble installing a VM and setting up SSH keys. In any case, pair them up, so only half of them need to.
+Give everyone an IP address/EC2 hostname and the same SSH key. (I know, but we're all friends here.) Get them to put the SSH key in *~/.ssh/webops* and add the following to their *~/.ssh/config*:
+
+```
+Host webops
+    HostName <hostname>
+    User ubuntu
+    IdentityFile ~/.ssh/webops
+```
+
+Hopefully not many will have trouble SSHing in.
 
 In case everyone has had issues, take 10 minutes to sort them all out.
 
