@@ -111,7 +111,8 @@ Now we just tell `supervisorctl`, the control program, to reload its configurati
 
 ```sh
 % sudo supervisorctl
-> restart
+> reread
+> update
 > status
 ... wait 10 seconds
 > status
@@ -119,6 +120,8 @@ Now we just tell `supervisorctl`, the control program, to reload its configurati
 ```
 
 And it's running in the background. Lovely.
+
+This is a big advancement: we've gone from running commands to defining a configuration. The former is *imperative*: we know our current state and our desired state, and we invoke a sequence of commands to get there. The latter is *declarative*: we don't know our current state, just our desired state, and the computer figures out the sequence of operations. This is much easier to reason about, and therefore less error-prone, allowing your sysadmin to use their memory for far more useful things.
 
 [Supervisor]: http://supervisord.org/
 
@@ -158,7 +161,7 @@ We should now be able to talk to our site without specifying a port.
 
 *[Delete the port from the URL and make sure it works.]*
 
-You might find that while the game loads, it doesn't run. If that's the case, it's probably because WebSockets aren't proxying correctly (sorry about that). You can force the application to use HTTP polling rather than Websockets by adding the `TRANSPORTS=polling` environment variable to the supervisor file and reloading the application with `supervisorctl reread`.
+You might find that while the game loads, it doesn't run. If that's the case, it's probably because WebSockets aren't proxying correctly (sorry about that). You can force the application to use HTTP polling rather than Websockets by adding the `TRANSPORTS=polling` environment variable to the supervisor file and reloading the application with `supervisorctl reread`, then `supervisorctl update`.
 
 [nginx]: https://nginx.org/
 
@@ -209,7 +212,7 @@ Voila. Not much happened (except the application going down for a few seconds). 
 4. We told the supervisor to restart the application.
 5. We asked nginx to reload its configuration.
 
-Using Ansible (or whatever else), we can easily throw away this server and set up a new one in just a few clicks.
+Using Ansible (or whatever else), we can easily throw away this server and set up a new one in just a few clicks. Once again, we've gone from configuring the server *imperatively* to *declaratively*, allowing us to define the whole state up-front before we start applying the configuration.
 
 [Ansible]: https://www.ansible.com/
 [Chef]: https://www.chef.io/chef/
