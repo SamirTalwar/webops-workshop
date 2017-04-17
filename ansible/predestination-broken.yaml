@@ -35,14 +35,19 @@
       supervisorctl:
         name: predestination
         state: restarted
-    - name: Forward port 80 to port 8080
-      copy:
-        src: ../nginx/predestination.conf
-        dest: /etc/nginx/sites-enabled/predestination
     - name: Disable the default nginx configuration
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
+    - name: Configure nginx to proxy Predestination
+      copy:
+        src: ../nginx/predestination.conf
+        dest: /etc/nginx/sites-available/predestination.conf
+    - name: Enable the nginx proxy
+      file:
+        src: /etc/nginx/sites-available/predestination.conf
+        dest: /etc/nginx/sites-enabled/predestination.conf
+        state: link
     - name: Reload the nginx configuration
       service:
         name: nginx

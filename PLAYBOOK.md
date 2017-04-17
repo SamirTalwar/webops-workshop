@@ -126,7 +126,9 @@ And it's running in the background. Lovely.
 
 [nginx][] to the rescue. We don't want to run our site as the root user, so we'll use nginx, an HTTP server, to route traffic from port 80 to port 8080.
 
-Delete */etc/nginx/sites-enabled/default*, and create a file called */etc/nginx/sites-enabled/predestination*:
+Delete */etc/nginx/sites-enabled/default* to disable the default endpoint.
+
+Next, create a file called */etc/nginx/sites-available/predestination.conf*:
 
 ```
 server {
@@ -140,10 +142,16 @@ server {
 }
 ```
 
+You'll need to enable it by creating a symbolic link in the *sites-enabled* directory:
+
+```sh
+% sudo ln -s /etc/nginx/sites-available/predestination.conf /etc/nginx/sites-enabled/
+```
+
 Next, reload nginx:
 
-```
-% nginx -s reload
+```sh
+% sudo nginx -s reload
 ```
 
 We should now be able to talk to our site without specifying a port.

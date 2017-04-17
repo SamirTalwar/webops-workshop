@@ -5,7 +5,7 @@
   tasks:
     - name: Stop forwarding port 80 to port 8080
       file:
-        path: /etc/nginx/sites-enabled/predestination
+        path: /etc/nginx/sites-enabled/predestination.conf
         state: absent
     - name: Reload the nginx configuration
       service:
