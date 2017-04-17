@@ -172,11 +172,21 @@ Can you imagine doing that a second time? Ugh. Our website will be down for ages
 
 Instead, we're going to use an infrastructure automation tool. My favourite is [Ansible][], which is what we're going to use today, but there are plenty of others. The most popular are [Puppet][], [Chef][] and [SaltStack][].
 
-Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file. You've already created one called *ansible/inventory*.
+Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file. Let's create one now called *ansible/inventory*:
 
-*[Show the inventory file.]*
+```
+[aws]
+<your server IP address> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/webops
+```
 
-Let's try it.
+If you're on Windows, you can't run Ansible, but don't worry. SSH into your server, install Ansible (`sudo apt install ansible`), clone this repository and create an *ansible/inventory* file as follows:
+
+```
+[local]
+localhost ansible_connection=local
+```
+
+Now, let's try it.
 
 ```sh
 $ export ANSIBLE_INVENTORY=$PWD/ansible/inventory
@@ -191,9 +201,13 @@ Now we'll set up the application:
 ansible-playbook ansible/predestination.yaml
 ```
 
-Voila. Nothing changed (except the application going down for a few seconds). That's because we mostly did all the work already. You'll note that the supervisor was, however, reconfigured—that's because the application was moved from */home/ubuntu/predestination* to */var/www/predestination*.
+Voila. Not much happened (except the application going down for a few seconds). Take a look at the *ansible/predestination.yaml* file, and note the things that changed:
 
-*[Show the playbook and talk through it.]*
+1. The application was re-cloned, because this time we're cloning into a new directory.
+2. The dependencies were re-installed. Actually, nothing happened, but Ansible doesn't know, because it's just running a shell script. We try and avoid running scripts when using configuration management systems such as Ansible, because they can be non-deterministic, and so always have to be run.
+3. We reconfigured the supervisor to point to the new location.
+4. We told the supervisor to restart the application.
+5. We asked nginx to reload its configuration.
 
 Using Ansible (or whatever else), we can easily throw away this server and set up a new one in just a few clicks.
 
