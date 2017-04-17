@@ -27,10 +27,8 @@
       copy:
         src: ../supervisor/predestination.conf
         dest: /etc/supervisor/conf.d/predestination.conf
-    - name: Reload the supervisor
-      service:
-        name: supervisor
-        state: reloaded
+    - name: Re-read the supervisor configuration
+      command: supervisorctl reread
     - name: Restart the application
       supervisorctl:
         name: predestination

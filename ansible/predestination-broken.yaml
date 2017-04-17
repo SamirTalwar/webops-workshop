@@ -28,11 +28,9 @@
     - name: Set up the supervisor for the application
       copy:
         src: ../supervisor/predestination.conf
-        dest: /etc/nginx/sites-enabled/predestination
-    - name: Reload the supervisor
-      service:
-        name: supervisor
-        state: reloaded
+        dest: /etc/supervisor/conf.d/predestination.conf
+    - name: Re-read the supervisor configuration
+      command: supervisorctl reread
     - name: Restart the application
       supervisorctl:
         name: predestination
@@ -40,7 +38,7 @@
     - name: Forward port 80 to port 8080
       copy:
         src: ../nginx/predestination.conf
-        dest: /etc/nginx/sites-enabled/predestination.conf
+        dest: /etc/nginx/sites-enabled/predestination
     - name: Disable the default nginx configuration
       file:
         path: /etc/nginx/sites-enabled/default
