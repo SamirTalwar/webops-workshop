@@ -64,6 +64,8 @@ In fact, we probably want to make sure the application has as few rights as poss
 
 *[Leave it running for a few seconds, then kill it again.]*
 
+[Predestination]: https://github.com/SamirTalwar/predestination
+
 ## 00:30 — Keep it running
 
 Now, we can run the web server, but it's running in our terminal. We can't do anything else.
@@ -325,7 +327,7 @@ $ ansible-playbook ansible/predestination-undo.yaml
 $ ansible-playbook ansible/predestination-docker.yaml
 ```
 
-The first Ansible playbook removes everything we set up earlier, including the supervisor configuration, nginx configuration and the application itself. The second deploys predestination from the publicly-available [samirtalwar/predestination] Docker image.
+The first Ansible playbook removes everything we set up earlier, including the supervisor configuration, nginx configuration and the application itself. The second deploys predestination from the publicly-available [samirtalwar/predestination][] Docker image.
 
 *[Talk through the new playbook.]*
 
@@ -335,6 +337,7 @@ Building Docker images is beyond the scope of this tutorial, but I encourage you
 
 [Docker]: https://docs.docker.com/
 [Docker Compose]: https://docs.docker.com/compose/
+[samirtalwar/predestination]: https://hub.docker.com/r/samirtalwar/predestination/
 
 ## 01:45 — Any questions?
 
