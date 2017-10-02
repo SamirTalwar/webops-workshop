@@ -40,9 +40,11 @@ This uses Amazon Web Services. If you'd rather use another cloud provider, you'l
    ```
    count = <number of instances>
    ```
-4. `cd` into the *terraform* directory and run `terraform plan`, then check the plan.
-5. If you're happy, run `terraform apply`. This will create a server and configure it with everything necessary to run our example application, [Predestination][].
-6. `cd ..` back into the root directory.
+4. `cd` into the *terraform* directory.
+5. Run `terraform init` to set it up.
+6. Run `terraform plan`, then check the plan.
+7. If you're happy, run `terraform apply`. This will create a server and configure it with everything necessary to run our example application, [Predestination][].
+8. `cd ..` back into the root directory.
 
 [Amazon Web Services]: https://aws.amazon.com/
 [Predestination]: https://github.com/SamirTalwar/predestination
