@@ -30,7 +30,7 @@ Then clone this repository. All local commands are expected to be run from the r
 This uses Amazon Web Services. If you'd rather use another cloud provider, you'll need to configure it yourself.
 
 1. If you haven't already, create an account on [Amazon Web Services][].
-2. Pick your favourite AWS region, grab your VPC ID and subnet ID, and create a file called *terraform/terraform.tfvars* as follows:
+2. Pick your favourite AWS region, grab your VPC ID and subnet ID, and create a file called *terraform/terraform.tfvars* as follows (you can copy *terraform/terraform.tfvars.example):
    ```
    region = "<Region>"
    vpc_id = "<VPC ID>"

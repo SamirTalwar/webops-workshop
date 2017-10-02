@@ -1,0 +1,7 @@
+region = "eu-west-1"
+
+vpc_id = "vpc-123"
+
+subnet_id = "subnet-456"
+
+count = 1
