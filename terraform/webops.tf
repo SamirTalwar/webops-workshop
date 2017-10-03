@@ -6,6 +6,17 @@ variable "count" {
   default = 1
 }
 
+variable "cloudflare_email" {}
+variable "cloudflare_token" {}
+
+variable "domain" {}
+variable "subdomain" {}
+
+provider "cloudflare" {
+  email = "${var.cloudflare_email}"
+  token = "${var.cloudflare_token}"
+}
+
 provider "aws" {
   region = "${var.region}"
 }
@@ -95,4 +106,12 @@ resource "aws_instance" "webops" {
       "sudo apt-get install -qy python",
     ]
   }
+}
+
+resource "cloudflare_record" "webops" {
+  domain = "${var.domain}"
+  name   = "${var.subdomain}"
+  value  = "${aws_instance.webops.public_ip}"
+  type   = "A"
+  ttl    = 120
 }
