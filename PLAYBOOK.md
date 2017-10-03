@@ -94,7 +94,7 @@ You can use `nohup` to disconnect the process from the terminal.
 
 This isn't great, though. What if we want to stop the application? We have to write down the PID? And remember to kill it? We can't just start a new version over the top—it won't even start, because the port is taken.
 
-On Linux, services are often managed through scripts living in */etc/init.d* or */etc/rc.d*. *[Show one of them.]* This works, but is a massive pain. It's a lot of complicated script and it's really easy to get it wrong.
+On Linux, services are often managed through scripts living in */etc/init.d* or */etc/rc.d*. *[Show one of them.]* This works, but is a massive pain. It's a lot of complicated scripts and it's really easy to get it wrong.
 
 Instead, we're going to use [Supervisor][], a process control system that's way easier to manage. Supervisor will take care of running our process, even if we restart the computer.
 
