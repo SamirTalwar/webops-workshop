@@ -16,15 +16,19 @@ Topics include:
   * secure communication over HTTPS,
   * and, if we have time, how to do all this in the buzzword of the decade, containers.
 
-If you're participating in this workshop, you'll need to follow the [prerequisites][Prerequisites] well beforehand.
+The workshop is designed to run on Unix-like machine such as Linux or macOS. If you're running on Windows, we can make it work, but it won't be quite so true to real life.
 
 ## Following along at home
 
-If you want to go through it on your own, follow the [playbook][Playbook].
+If you want to go through it on your own, follow the [prerequisites][Prerequisites], then the [playbook][Playbook].
 
 ## Running this workshop yourself
 
-You're welcome to run this workshop yourself by following the [playbook][Playbook] and making changes as necessary. All I ask is that:
+You're welcome to run this workshop yourself by following the [playbook][Playbook] and making changes as necessary.
+
+You'll need to follow the [prerequisites][Prerequisites] ahead of the workshop, and ask students to run the client-side preparation in that document.
+
+All I ask is that:
 
 1. you tell me you're running it (you can reach me [over Twitter][@SamirTalwar] or [via email][samir@noodlesandwich.com]),
 2. you send feedback about how you found it, and
