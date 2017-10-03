@@ -54,7 +54,13 @@ This uses Amazon Web Services. If you'd rather use another cloud provider, you'l
 If you're using our example application, [Predestination][], you'll need a bunch of dependencies. (And if you're not, they can't hurt.)
 
 1. Verify that *ansible/inventory* has been created with the IP address of your server.
-2. Tell Ansible to install everything:
+2. Prime Ansible (I recommend using [`direnv`][direnv], and reading the *.envrc* file):
    ```sh
-   ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_INVENTORY=ansible/inventory ansible-playbook ansible/prerequisites.yaml
+   source .envrc
    ```
+3. Tell Ansible to install everything:
+   ```sh
+   ansible-playbook ansible/prerequisites.yaml
+   ```
+
+[direnv]: https://direnv.net/
