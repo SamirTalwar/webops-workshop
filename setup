@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eu
+
+(cd terraform && terraform apply)
+ansible-playbook ansible/prerequisites.yaml
+ansible all -m ping
