@@ -2,6 +2,15 @@
 
 set -eu
 
-(cd terraform && terraform apply)
+(
+  cd terraform
+  terraform init
+  terraform get
+  terraform apply
+)
+
+ansible all -m ping
+
 ansible-playbook ansible/prerequisites.yaml
+ansible-playbook ansible/predestination-undo.yaml
 ansible all -m ping

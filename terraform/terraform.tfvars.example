@@ -5,11 +5,3 @@ vpc_id = "vpc-123"
 subnet_id = "subnet-456"
 
 count = 1
-
-cloudflare_email = "alice@example.com"
-
-cloudflare_token = "1234567890abcdefghijklmnopqrstuvwxyz"
-
-domain = "example.com"
-
-subdomain = "www"
