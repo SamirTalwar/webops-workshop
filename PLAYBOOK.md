@@ -79,7 +79,7 @@ So run it in the background.
 … Sort of works. It's still tied to this TTY (terminal), and its output is interfering with our work. We can redirect it to a file:
 
 ```sh
-% sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
+% sudo --user=web PORT=8080 ./web >>& /var/log/predestination.log &
 ```
 
 If we lose SSH connection, the site might go down.
@@ -89,7 +89,7 @@ If we lose SSH connection, the site might go down.
 You can use `nohup` to disconnect the process from the terminal.
 
 ```sh
-% nohup sudo --user=web PORT=8080 ./web >>& /var/log/site.log &
+% nohup sudo --user=web PORT=8080 ./web >>& /var/log/predestination.log &
 ```
 
 This isn't great, though. What if we want to stop the application? We have to write down the PID? And remember to kill it? We can't just start a new version over the top—it won't even start, because the port is taken.
@@ -100,7 +100,7 @@ Instead, we're going to use [Supervisor][], a process control system that's way 
 
 So let's configure it to run our application.
 
-*[Copy the following file to /etc/supervisor/conf.d/site.conf:]*
+*[Copy the following file to /etc/supervisor/conf.d/predestination.conf:]*
 
 ```
 [program:site]
@@ -143,6 +143,8 @@ server {
 
   location / {
     proxy_pass http://localhost:8080;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
   }
 }
 ```
