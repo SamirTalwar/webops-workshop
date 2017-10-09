@@ -23,9 +23,18 @@
       service:
         name: nginx
         state: reloaded
+    - name: Wait for the application to stop
+      wait_for:
+        host: localhost
+        port: 8080
+        state: drained
     - name: Remove the application directory
       file:
         path: /var/www/predestination
+        state: absent
+    - name: Remove the other application directory
+      file:
+        path: /home/ubuntu/predestination
         state: absent
     - name: Remove the application user account
       user:
