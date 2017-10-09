@@ -14,10 +14,15 @@ A short introduction to deploying and running a website.
 
 ## 00:10 — Distribute connection details
 
-Give everyone an IP address/EC2 hostname and the same SSH key. (I know, but we're all friends here.) Get them to put the SSH key in *~/.ssh/webops* and add the following to their *~/.ssh/config*:
+Give everyone two IP addresses/EC2 hostnames (one blue, one green) and the same SSH key. (I know, but we're all friends here.) Get them to put the SSH key in *~/.ssh/webops* and add the following to their *~/.ssh/config*:
 
 ```
-Host webops
+Host webops-blue
+    HostName <hostname>
+    User ubuntu
+    IdentityFile ~/.ssh/webops
+
+Host webops-green
     HostName <hostname>
     User ubuntu
     IdentityFile ~/.ssh/webops
@@ -31,10 +36,12 @@ In case everyone has had issues, take 10 minutes to sort them all out.
 
 Pick a web application that takes `PORT` as an environment variable. This tutorial will assume you're using an app I wrote called [Predestination][].  If you pick a different application, change `./web` to however you start it.
 
-Log in to the server. (I'm using `mosh` here, but you can use `ssh` if you prefer it or you don't have a choice (i.e. you're on Windows).)
+Log in to the server named "green". You'll find out why it's green later.
+
+I'm using `mosh` here, but you can use `ssh` if you prefer it or you don't have a choice (i.e. you're on Windows).
 
 ```sh
-$ mosh webops
+$ mosh webops-green
 ```
 
 Clone the repository and install its dependencies:
@@ -51,7 +58,7 @@ Then run it:
 % PORT=8080 ./web # or however you start the application
 ```
 
-*[Browse to the URL and show it off. If possible, leave the browser window open. It *may* automatically reconnect if you terminate the server and restart it, but I wouldn't bank on it.]*
+*[Browse to the preconfigured URL, proxied through Cloudflare, and show it off. If possible, leave the browser window open. It *may* automatically reconnect if you terminate the server and restart it, but I wouldn't bank on it.]*
 
 Note that we're using the port 8080. HTTP usually runs over port 80, but we can't start an application there without it running as *root*, and we don't want to do that, as an attacker compromising the web server could get access to anything else.
 
@@ -179,14 +186,27 @@ Can you imagine doing that a second time? Ugh. Our website will be down for ages
 
 Instead, we're going to use an infrastructure automation tool. My favourite is [Ansible][], which is what we're going to use today, but there are plenty of others. The most popular are [Puppet][], [Chef][] and [SaltStack][].
 
-Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file. Let's create one now called *ansible/inventory*:
+Ansible works over SSH, so there's nothing to do on the server. You just need it installed on the client, along with an *inventory* file. Let's create one now called *ansible/inventory*.
+
+*[If you're being generous, give them a Cloudflare token for blue-green deployment later. If not, skip it and just include the first two variables.]*
 
 ```
-[aws]
-<your server IP address> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/webops
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/webops
+cloudflare_email=alice@example.com
+cloudflare_token=1234567890abcdefghijklmnopqrstuvwxyz
+domain=example.com
+subdomain=www
+
+[blue]
+<your Blue server IP address>  ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/webops
+
+[green]
+<your Green server IP address> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/webops
 ```
 
-If you're on Windows, you can't run Ansible, but don't worry. SSH into your server, install Ansible (`sudo apt install ansible`), clone this repository and create an *ansible/inventory* file as follows:
+If you're on Windows, you can't run Ansible, but don't worry. We'll simulate it. (In reality, you'd probably use a third box purely for provisioning.) So instead of the above, SSH into each server, install Ansible (`sudo apt install ansible`), clone this repository and create an *ansible/inventory* file as follows:
 
 ```
 [local]
@@ -205,7 +225,7 @@ That pings all the servers to ensure they're responding over SSH.
 Now we'll set up the application:
 
 ```sh
-ansible-playbook ansible/predestination.yaml
+ansible-playbook -l green -e version=master ansible/predestination.yaml
 ```
 
 Voila. Not much happened (except the application going down for a few seconds). Take a look at the *ansible/predestination.yaml* file, and note the things that changed:
@@ -229,18 +249,19 @@ Let's make it blue.
 
 *[Change it to blue. Can't be that hard. Try `#147086`.]*
 
-All we need to do is make a couple of changes to the Ansible playbook. We'll add the following lines to the "Clone the repository" section:
+All we need to do is commit to the repository (which I've done for you) with a branch name.
 
-```
-        version: blue
-        update: yes
+Then we redeploy:
+
+```sh
+ansible-playbook -l blue -e version=blue ansible/predestination.yaml
 ```
 
 *[Ship it, wait 30 seconds and reload.]*
 
-Nice and easy. Ansible took care of figuring out what's changed and what's stayed the same. It updates the Git repository to point at our new version, then instructs the supervisor to restart it. It's only down for a few seconds while it restarts.
+Nice and easy. Ansible took care of figuring out what's changed and what's stayed the same. Because we're pointing to the "blue" host this time, it will clone the repository fresh and set up all the different parts.
 
-If you really can't go down, even for a second, there are more advanced techniques you can use. For example, you can use *blue-green deployment*. What this means is that we have two servers (codenamed "blue" and "green"). Only one of the servers is active at any time (this means that we somehow configured a third server, the "gateway", to redirect all traffic to this one). Let's assume it's the blue one. When we release, we release to the inactive (green) server, ensure that everything is healthy, then activate it. If it doesn't work, figure out why, and meanwhile, the blue server is still happily serving requests.
+The eagle-eyed among you might have noticed that it didn't go down, even for a second. This is because we're using a technique called *blue-green deployment*. For example, you can use *blue-green deployment*. What this means is that we have two servers (codenamed "blue" and "green"). Only one of the servers is active at any time (we started with the green server). Let's assume it's the blue one. When we release, we release to the inactive (green) server, ensure that everything is healthy, then activate it. If it doesn't work, figure out why, and meanwhile, the blue server is still happily serving requests.
 
 It's quite common to automate this kind of deployment either periodically or every time a commit gets pushed to the *master* branch. The latter is called *continuous deployment*. This is related to *continuous integration*. The idea is that each time you push, a server runs your Ansible playbook or other deployment mechanism for you. You could manage this server yourself, but you could also use [Travis CI][], [CircleCI][], [Shippable][] or another online service, which are often free to start.
 
@@ -276,8 +297,10 @@ It'd be nice to know what's going on on the server, especially if things are scr
 
 Let's say, for example, that we introduce a bug into our application.
 
+*[Introduce a bug on a branch called "broken".]*
+
 ```sh
-$ ansible-playbook ansible/predestination-broken.yaml
+$ ansible-playbook -l green -e version=broken ansible/predestination.yaml
 ```
 
 So, let's say I introduce a bug that stops the game. This is bad, right? How do I trace it?
@@ -299,7 +322,7 @@ In this output stream, we can see what's called a "stack trace". This allows us 
 Once we diagnose the problem, we can now fix the bug and redeploy, or roll back to a previous version.
 
 ```sh
-$ ansible-playbook ansible/predestination.yaml
+$ ansible-playbook -l blue -e version=master ansible/predestination.yaml
 ```
 
 ## 01:30 — How do I store data?
@@ -325,15 +348,15 @@ Right. Here come the fireworks.
 Docker also packages everything. This means that you don't need to install anything on the server except Docker itself, as the *Docker image* that you build contains all the application dependencies. This includes Python (or whatever you want to use to make your web app).
 
 ```sh
-$ ansible-playbook ansible/predestination-undo.yaml
-$ ansible-playbook ansible/predestination-docker.yaml
+$ ansible-playbook -l green ansible/predestination-undo.yaml
+$ ansible-playbook -l green ansible/predestination-docker.yaml
 ```
 
 The first Ansible playbook removes everything we set up earlier, including the supervisor configuration, nginx configuration and the application itself. The second deploys predestination from the publicly-available [samirtalwar/predestination][] Docker image.
 
 *[Talk through the new playbook.]*
 
-It's been around for a few years, so many don't consider it quite as stable as running on bare Linux, but personally, I think the convenience of packaging an entire application up locally is so good that I'm willing to make that trade-off. We no longer need to configure files on the server; we just instruct Docker to start a "container" from our image and away we go. It also means we can test our images locally and they'll work almost entirely the same, whether we're on Windows, macOS or Linux.
+It's been around for only a few years, so many don't consider it quite as stable as running on bare Linux, but personally, I think the convenience of packaging an entire application up locally is so good that I'm willing to make that trade-off. We no longer need to configure files on the server; we just instruct Docker to start a "container" from our image and away we go. It also means we can test our images locally and they'll work almost entirely the same, whether we're on Windows, macOS or Linux.
 
 Building Docker images is beyond the scope of this tutorial, but I encourage you to have a go with it.
 

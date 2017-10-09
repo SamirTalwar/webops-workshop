@@ -1,6 +1,8 @@
 # Prerequisites
 
-You'll need a server.
+You're going to need a server.
+
+You will need an account with Amazon Web Services, and another with Cloudflare.
 
 ## 1. Client-side preparation
 
@@ -40,21 +42,36 @@ This uses Amazon Web Services. If you'd rather use another cloud provider, you'l
    ```
    count = <number of instances>
    ```
+3. Copy *ansible/group_vars/all/variables.example* to *ansiblansible/group_vars/all/variables*, and replace the values with your own. (You can leave the top two.)
 4. `cd` into the *terraform* directory.
 5. Run `terraform init` to set it up.
 6. Run `terraform plan`, then check the plan.
-7. If you're happy, run `terraform apply`. This will create a server and configure it with everything necessary to run our example application, [Predestination][].
+7. If you're happy, run `terraform apply`. This will create two servers.
 8. `cd ..` back into the root directory.
 
 [Amazon Web Services]: https://aws.amazon.com/
 [Predestination]: https://github.com/SamirTalwar/predestination
 
-## 3. Set up the dependencies
+## 3. Pick a domain
+
+If you want to do blue-green deployment, you need a hostname. You can probably simulate it by changing the local *hosts* file, but that's no fun.
+
+1. For security reasons, you'll probably want to create a fake [Cloudflare][] account with access to a cheap domain, and use the token for that.
+2. Grab your Cloudflare token.
+3. Copy *ansible/group_vars/all/variables.example* to *ansible/group_vars/all/variables*, and replace the values with your own. (You can leave the top two.)
+4. Pick a subdomain (or a sub-subdomain) for each person/group. You'll need to distribute them as part of the Ansible configuration. Pick one for yourself too.
+5. Configure [Pingdom][] to tell you whether it's up.
+6. Just before the workshop, turn Cloudflare's development mode on (it's on the Caching page). Otherwise it'll cache client CSS and break the demo.
+
+[Cloudflare]: https://www.cloudflare.com/
+[Pingdom]: https://www.pingdom.com/
+
+## 4. Set up the dependencies
 
 If you're using our example application, [Predestination][], you'll need a bunch of dependencies. (And if you're not, they can't hurt.)
 
-1. Verify that *ansible/inventory* has been created with the IP address of your server.
-2. Prime Ansible (I recommend using [`direnv`][direnv], and reading the *.envrc* file):
+1. Verify that *ansible/inventory* has been created with the IP addresses of your servers.
+2. Prime Ansible, either by installing [`direnv`][direnv], or by manually including the *.envrc* file.
    ```sh
    source .envrc
    ```
@@ -62,5 +79,9 @@ If you're using our example application, [Predestination][], you'll need a bunch
    ```sh
    ansible-playbook ansible/prerequisites.yaml
    ```
+
+## 5. Pick a product
+
+I'd recommend Predestination, but either way, make sure you own the repository. You'll make changes to it later.
 
 [direnv]: https://direnv.net/
