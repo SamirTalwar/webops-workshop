@@ -37,36 +37,21 @@
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
 
-    - name: Install certbot
+    - name: Install dependencies
       apt:
-        name: certbot
-    - name: Install docker-ce
-      apt:
-        name: docker-ce
-    - name: Install make
-      apt:
-        name: make
-    - name: Install mosh
-      apt:
-        name: mosh
-    - name: Install nginx
-      apt:
-        name: nginx
-    - name: Install python3.6
-      apt:
-        name: python3.6
-    - name: Install python-pip
-      apt:
-        name: python-pip
-    - name: Install supervisor
-      apt:
-        name: supervisor
-    - name: Install virtualenv
-      apt:
-        name: virtualenv
-    - name: Install zsh
-      apt:
-        name: zsh
+        name: '{{ item }}'
+      with_items:
+        - certbot
+        - docker-ce
+        - make
+        - mosh
+        - nginx
+        - python3.6
+        - python-pip
+        - supervisor
+        - virtualenv
+        - zsh
+
     - name: Set the ubuntu user's shell to zsh
       user:
         name: ubuntu
