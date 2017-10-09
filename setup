@@ -13,4 +13,5 @@ ansible all -m ping
 
 ansible-playbook ansible/prerequisites.yaml
 ansible-playbook ansible/predestination-undo.yaml
+ansible-playbook -l green ansible/dns.yaml
 ansible all -m ping

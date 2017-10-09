@@ -1,0 +1,4 @@
+---
+- hosts: all
+  tasks:
+    - import_tasks: dns-tasks.yaml
