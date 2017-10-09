@@ -51,12 +51,16 @@
         - supervisor
         - virtualenv
         - zsh
+    - name: Install docker-py
+      pip:
+        name: docker-py
+
+    - name: Disable the default nginx configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
 
     - name: Set the ubuntu user's shell to zsh
       user:
         name: ubuntu
         shell: /bin/zsh
-
-    - name: Install docker-py
-      pip:
-        name: docker-py
