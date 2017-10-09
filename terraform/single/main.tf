@@ -22,7 +22,7 @@ resource "aws_instance" "webops" {
   count                  = "${var.count}"
 
   provisioner "local-exec" {
-    command = "(echo '[${var.cluster_name}]'; echo '${self.public_ip}') >> ../ansible/inventory"
+    command = "(echo '[${var.cluster_name}]'; echo '${self.public_ip}') >> ../ansible/inventory-${var.count}"
   }
 
   provisioner "remote-exec" {
@@ -35,6 +35,7 @@ resource "aws_instance" "webops" {
     inline = [
       "sudo apt-get update -qq",
       "sudo apt-get install -qy python",
+      "echo 'PS1=\"${var.cluster_name}%% \"' > ~/.zshrc",
     ]
   }
 }
