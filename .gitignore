@@ -1,4 +1,5 @@
-ansible/inventory
+ansible/group_vars/all/variables
+ansible/inventory*
 ansible/*.retry
 terraform/.terraform
 terraform/terraform.tfvars
