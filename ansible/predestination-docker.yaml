@@ -15,4 +15,5 @@
       wait_for:
         host: localhost
         port: 80
-    - import_tasks: dns-tasks.yaml
+
+- import_playbook: dns.yaml

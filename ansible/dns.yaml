@@ -1,4 +1,13 @@
 ---
 - hosts: all
   tasks:
-    - import_tasks: dns-tasks.yaml
+    - name: Update the DNS to the given cluster
+      cloudflare_dns:
+        zone: "{{ domain }}"
+        record: "{{ subdomain }}"
+        type: A
+        value: "{{ inventory_hostname }}"
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_token }}"
+        proxied: true
+        solo: true
